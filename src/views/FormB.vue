@@ -129,7 +129,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, onBeforeUnmount, watch } from 'vue'
 import FormField     from '../components/FormField.vue'
 import SuccessScreen from '../components/SuccessScreen.vue'
 import { detectDeviceType, formatElapsedTime, queueBookingSubmission } from '../utils/bookingStorage'
@@ -156,6 +156,27 @@ function tick() {
   if (timerStartedAt.value === null) return
   elapsedSeconds.value = Math.floor((Date.now() - timerStartedAt.value) / 1000)
 }
+
+function formatCardNumberInput(value) {
+  const digits = (value || '').replace(/\D/g, '').slice(0, 19)
+  return digits.replace(/(.{4})/g, '$1 ').trim()
+}
+
+function formatExpiryInput(value) {
+  const digits = (value || '').replace(/\D/g, '').slice(0, 4)
+  if (digits.length <= 2) return digits
+  return digits.slice(0, 2) + '/' + digits.slice(2)
+}
+
+watch(() => form.cardNumber, (v) => {
+  const f = formatCardNumberInput(v)
+  if (v !== f) form.cardNumber = f
+})
+
+watch(() => form.expiry, (v) => {
+  const f = formatExpiryInput(v)
+  if (v !== f) form.expiry = f
+})
 
 function startTimer() {
   if (timerRunning.value) return
