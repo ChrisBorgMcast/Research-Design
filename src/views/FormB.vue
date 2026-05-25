@@ -120,7 +120,7 @@
           </div>
           <div class="step-nav">
             <button class="btn btn-ghost" @click="currentStep = 2">← Back</button>
-            <button class="btn" @click="submit">Complete booking</button>
+            <button class="btn" @click="handleSubmit">Complete booking</button>
           </div>
         </div>
       </Transition>

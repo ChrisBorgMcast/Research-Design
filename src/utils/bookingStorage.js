@@ -1,5 +1,8 @@
 const STORAGE_KEY = 'booking-submissions'
 
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { db, isFirebaseReady } from '../firebase'
+
 export function detectDeviceType() {
   if (typeof navigator === 'undefined') return 'pc/laptop'
 
@@ -31,7 +34,26 @@ export function queueBookingSubmission({ formType, elapsedSeconds, deviceType })
   existing.unshift(record)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing.slice(0, 50)))
 
+  if (isFirebaseReady && db) {
+    void saveTimingRecord(record)
+  }
+
   return record
+}
+
+async function saveTimingRecord(record) {
+  try {
+    await setDoc(doc(db, 'bookingTimings', record.id), {
+      formType: record.formType,
+      deviceType: record.deviceType,
+      durationSeconds: record.elapsedSeconds,
+      durationLabel: record.elapsedLabel,
+      clientSubmittedAt: record.submittedAt,
+      submittedAt: serverTimestamp(),
+    })
+  } catch (error) {
+    console.error('Firestore write failed:', error)
+  }
 }
 
 function readQueuedBookings() {
