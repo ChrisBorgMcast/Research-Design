@@ -149,15 +149,9 @@ function stopTimer() {
 }
 
 function validateCardNumber(value) {
+  // Only validate length (13-19 digits). Formatting (spaces) is allowed.
   const digits = (value || '').replace(/\D/g, '')
   if (!/^[0-9]{13,19}$/.test(digits)) return 'Enter a valid card number (13–19 digits)'
-  let sum = 0; let alt = false
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let d = parseInt(digits[i], 10)
-    if (alt) { d = d * 2; if (d > 9) d -= 9 }
-    sum += d; alt = !alt
-  }
-  if (sum % 10 !== 0) return 'Card number failed validation'
   return ''
 }
 
